@@ -8,9 +8,9 @@ end
 _G.executed = true
 
 local config = {
-    box = true,
-    name = true,
-    color = Color3.fromRGB(180, 180, 180)
+    box = _G.box or true,
+    name = _G.name or true,
+    color = _G.Color or Color3.fromRGB(180, 180, 180)
 }
 
 local trackedESP = _G.trackedESP or {}
