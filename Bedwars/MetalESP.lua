@@ -107,5 +107,5 @@ scan_workspace()
 while true do
     scan_workspace()
     update_esp()
-    task.wait(0.03)
+    wait(0.03)
 end
