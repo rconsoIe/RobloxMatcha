@@ -15,6 +15,7 @@ local config = {
 
 local trackedESP = _G.trackedESP or {}
 _G.trackedESP = trackedESP
+local last_update = 0
 local workspace = workspace or game and game.Workspace or nil
 if not workspace then return end
 
@@ -25,26 +26,21 @@ local function scan_workspace()
         if prompt then
             local part = model:FindFirstChild("Part")
             if part then
-                local addr = tostring(part)
+                local addr = tostring(part.Address)
                 valid[addr] = true
                 if not trackedESP[addr] then
-                    local text
-                    local box
-                    if config.name then
-                        text = Drawing.new("Text")
-                        text.Text = "Metal"
-                        text.Center = true
-                        text.Outline = true
-                        text.Color = config.color
-                        text.Visible = true
-                    end
-                    if config.box then
-                        box = Drawing.new("Square")
-                        box.Thickness = 1
-                        box.Filled = false
-                        box.Color = config.color
-                        box.Visible = true
-                    end
+                    local text = Drawing.new("Text")
+                    text.Text = "Metal"
+                    text.Center = true
+                    text.Outline = true
+                    text.Color = config.color
+                    text.Visible = false
+
+                    local box = Drawing.new("Square")
+                    box.Thickness = 1
+                    box.Filled = false
+                    box.Color = config.color
+                    box.Visible = false
 
                     trackedESP[addr] = {
                         root = part,
@@ -81,23 +77,19 @@ local function update_esp()
                 local x = head_pos.X - w / 2
                 local y = head_pos.Y
 
-                if box then
-                    box.Position = Vector2.new(x, y)
-                    box.Size = Vector2.new(w, h)
-                    box.Visible = config.box
-                end
+                box.Position = Vector2.new(x, y)
+                box.Size = Vector2.new(w, h)
+                box.Visible = config.box
 
-                if text then
-                    text.Position = Vector2.new(head_pos.X, y - 16)
-                    text.Visible = config.name
-                end
+                text.Position = Vector2.new(head_pos.X, y - 16)
+                text.Visible = config.name
             else
-                if box then box.Visible = false end
-                if text then text.Visible = false end
+                box.Visible = false
+                text.Visible = false
             end
         else
-            if box then box.Visible = false end
-            if text then text.Visible = false end
+            box.Visible = false
+            text.Visible = false
         end
     end
 end
@@ -107,5 +99,4 @@ scan_workspace()
 while true do
     scan_workspace()
     update_esp()
-    wait(0.03)
 end
