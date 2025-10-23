@@ -1,4 +1,4 @@
--- skidded 
+-- skidded
 
 UILib = {}
 UILib.__index = UILib
@@ -60,12 +60,13 @@ local function destroyAllDrawings(drawingsTable)
 end
 
 function UILib.new(name, size, watermarkActivity)
-    repeat 
+    repeat -- iskeypressed is halting our matcha menu button
         wait(1/9999)
     until isrbxactive()
 
     local self = setmetatable({}, UILib)
 
+    -- input
     self._inputs = {
         ['m1'] = { id = 0x01, held = false, click = false },
         ['m2'] = { id = 0x02, held = false, click = false },
@@ -126,7 +127,8 @@ function UILib.new(name, size, watermarkActivity)
         ['x'] = { id = 0x58, held = false, click = false },
         ['y'] = { id = 0x59, held = false, click = false },
         ['z'] = { id = 0x5A, held = false, click = false },
-
+        -- ['lwin'] = { id = 0x5B, held = false, click = false },
+        -- ['rwin'] = { id = 0x5C, held = false, click = false },
         ['numpad0'] = { id = 0x60, held = false, click = false },
         ['numpad1'] = { id = 0x61, held = false, click = false },
         ['numpad2'] = { id = 0x62, held = false, click = false },
@@ -187,6 +189,7 @@ function UILib.new(name, size, watermarkActivity)
     self._clipboard_color = nil
     self._tick = os.clock()
 
+    -- user
     self.identity = name
     self._watermark_activity = watermarkActivity
     self.x = 20
@@ -194,6 +197,7 @@ function UILib.new(name, size, watermarkActivity)
     self.w = size and size.x or 300
     self.h = size and size.y or 400
 
+    -- theme
     self._color_accent = Color3.fromRGB(255, 127, 0)
     self._color_text = Color3.fromRGB(255, 255, 255)
     self._color_crust = Color3.fromRGB(0, 0, 0)
@@ -201,11 +205,13 @@ function UILib.new(name, size, watermarkActivity)
     self._color_surface = Color3.fromRGB(38, 38, 38)
     self._color_overlay = Color3.fromRGB(76, 76, 76)
 
+    -- styling
     self._title_h = 25
     self._tab_h = 20
     self._padding = 6
     self._gradient_detail = 80
 
+    -- menu base
     local base = Drawing.new('Square')
     base.Filled = true
     base.Color = self._color_surface
@@ -229,6 +235,7 @@ function UILib.new(name, size, watermarkActivity)
     title.Outline = true
     title.Color = self._color_text
 
+    -- watermark
     local watermarkBase = Drawing.new('Square')
     watermarkBase.Filled = true
     watermarkBase.Color = self._color_surface
@@ -316,6 +323,7 @@ function UILib:_SpawnDropdown(default, choices, multi, callback, position, width
         table.insert(drawings, entry)
     end
 
+    -- convert to dictionary
     local choiceHash = {}
     for _, choice in ipairs(choices) do
         choiceHash[choice] = false
@@ -340,6 +348,7 @@ function UILib:_SpawnColorpicker(default, colorLabel, callback)
         self:_RemoveColorpicker()
     end
 
+    -- base
     local base = Drawing.new('Square')
     base.Filled = true
     base.Color = self._color_surface
@@ -369,6 +378,7 @@ function UILib:_SpawnColorpicker(default, colorLabel, callback)
 
     local drawings = { base, crust, border, titleBar, label, preview }
 
+    -- gradients
     for _ = 1, self._gradient_detail * 3 do
         local segment = Drawing.new('Square')
         segment.Filled = true
@@ -376,6 +386,7 @@ function UILib:_SpawnColorpicker(default, colorLabel, callback)
         table.insert(drawings, segment)
     end
 
+    -- cursors
     local cursorCrustPrimary = Drawing.new('Circle')
     cursorCrustPrimary.Filled = false
     cursorCrustPrimary.Thickness = 3
@@ -536,7 +547,7 @@ function UILib:Checkbox(tabName, sectionName, label, defaultValue, callback)
     local text = Drawing.new('Text')
     text.Color = self._color_text
     text.Outline = true
-    text.Text = tostring(label or "")
+    text.Text = label
 
     self:_AddToSection(tabName, sectionName, 'checkbox', defaultValue, callback, {
         outline,
@@ -606,7 +617,7 @@ function UILib:Choice(tabName, sectionName, label, defaultValue, callback, choic
     local text = Drawing.new('Text')
     text.Color = self._color_text
     text.Outline = true
-    text.Text = tostring(label or "")
+    text.Text = label
 
     self:_AddToSection(tabName, sectionName, 'choice', defaultValue, callback, {
         outline,
@@ -778,7 +789,7 @@ function UILib:CreateSettingsTab(customName)
 end
 
 function UILib:Step()
-    
+    -- our input stuff
     local deltaTime = math.max(os.clock() - self._tick, 0.0035)
     local mousePos = getMousePos()
 
@@ -808,6 +819,7 @@ function UILib:Step()
 
     setrobloxinput(not menuOpen)
 
+    -- draw watermark
     local watermarkBase = self._tree['_drawings'][6]
     local watermarkCursor = self._tree['_drawings'][7]
     local watermarkCrust = self._tree['_drawings'][8]
@@ -865,6 +877,7 @@ function UILib:Step()
         watermarkTitle.Visible = false
     end
 
+    -- draw colorpicker
     if self._active_colorpicker then
         local colorpickerDraws = self._active_colorpicker['_drawings']
         local colorpickerBase = colorpickerDraws[1]
@@ -1010,6 +1023,7 @@ function UILib:Step()
         clickFrame = false
     end
 
+    -- draw dropdown
     if self._active_dropdown then
         local dropdownChoices = self._active_dropdown['choices']
         local dropdownIsMulti = self._active_dropdown['multi']
@@ -1088,6 +1102,7 @@ function UILib:Step()
         clickFrame = false
     end
 
+    -- draw menu base
     local uiCrust = self._tree['_drawings'][1]
     local uiBorder = self._tree['_drawings'][2]
     local uiBase = self._tree['_drawings'][3]
@@ -1124,6 +1139,7 @@ function UILib:Step()
     uiTitle.Visible = childrenVisible
     uiTitle.Color = self._color_text
 
+    -- input handling for menu dragging
     local titleOrigin = Vector2.new(self.x, self.y)
     local titleSize = Vector2.new(self.w, self._title_h)
 
@@ -1145,6 +1161,7 @@ function UILib:Step()
         clickFrame = false
     end
 
+    -- draw tabs
     local numTabs = #self._tree['_tabs']
     for tabIndex, tab in ipairs(self._tree['_tabs']) do
         local tabName = tab['name']
@@ -1184,16 +1201,19 @@ function UILib:Step()
         tabText.Visible = childrenVisible
         tabText.Color = self._color_text
 
+        -- input handling for tabs
         if clickFrame and self._IsMouseWithinBounds(tabPosition, tabSize) then
             self._active_tab = tabName
         end
 
+        -- draw sections
         local totalSectionH_0 = self._padding
         local totalSectionH_1 = self._padding
         for sectionIndex, section in ipairs(tab['_sections']) do
             local sectionDraws = section['_drawings']
             local sectionItems = section['_items']
 
+            -- keybind processing
             for _, keybind in ipairs(sectionItems) do
                 local itemType = keybind['type']
                 local itemValue = keybind['value']
@@ -1230,6 +1250,7 @@ function UILib:Step()
                     self.y + self._title_h + self._tab_h + self._padding * 2 + (opposite==1 and totalSectionH_0 or totalSectionH_1)
                 )
 
+                -- draw items
                 for _, sectionItem in ipairs(sectionItems) do
                     local itemType = sectionItem['type']
                     local itemDraws = sectionItem['_drawings']
@@ -1267,6 +1288,7 @@ function UILib:Step()
                         checkboxLabel.Visible = childrenVisible
                         checkboxLabel.Color = self._color_text
 
+                        -- handle input
                         if self._IsMouseWithinBounds(itemPosition, boxSize) then
                             checkboxOutline.Color = self._color_accent
 
@@ -1331,6 +1353,7 @@ function UILib:Step()
                         sliderValue.Transparency = baseOpacity
                         sliderValue.Visible = childrenVisible
 
+                        -- handle input
                         if self._IsMouseWithinBounds(itemPosition + Vector2.new(0, labelH + 10), sliderBoxSize) then
                             sliderValue.Color = self._color_accent
 
@@ -1404,6 +1427,7 @@ function UILib:Step()
                         choiceExpand.Visible = childrenVisible
                         choiceExpand.Color = self._color_text
 
+                        -- handle input
                         if self._IsMouseWithinBounds(choiceBoxPosition, choiceBoxSize) then
                             choiceOutline.Color = self._color_accent
 
@@ -1456,6 +1480,7 @@ function UILib:Step()
                         buttonFill.Visible = childrenVisible
                         buttonFill.Color = self._color_crust
 
+                        -- handle input
                         if self._IsMouseWithinBounds(itemPosition, buttonBoxSize) then
                             if clickFrame and itemCallback then
                                 itemCallback(sectionItem['value'])
@@ -1497,6 +1522,7 @@ function UILib:Step()
                         colorpickerLabel.Visible = childrenVisible
                         colorpickerLabel.Color = self._color_text
 
+                        -- handle input
                         if self._IsMouseWithinBounds(boxPosition, boxSize) then
                             if clickFrame then
                                 local colorpickerCallback = function(newColor)
@@ -1556,6 +1582,7 @@ function UILib:Step()
                         keyLabel.Visible = childrenVisible
                         keyLabel.Color = self._color_text
 
+                        -- handle input
                         if self._IsMouseWithinBounds(buttonPosition, buttonBoxSize) then
                             if clickFrame then
                                 sectionItem['_listening'] = true
@@ -1582,6 +1609,7 @@ function UILib:Step()
                     end
                 end
 
+                -- section core
                 local sectionBackdrop = sectionDraws[1]
                 local sectionCrust = sectionDraws[2]
                 local sectionBorder = sectionDraws[3]
@@ -1614,9 +1642,10 @@ function UILib:Step()
                     totalSectionH_1 = totalSectionH_1 + sectionY
                 end
             else
-                
+                -- tab is not active
                 undrawAll(sectionDraws)
 
+                -- and its items
                 for _, sectionItem in ipairs(sectionItems) do
                     undrawAll(sectionItem['_drawings'])
                 end
@@ -1624,18 +1653,21 @@ function UILib:Step()
         end
     end
 
+    -- finalize all input
     self._tick = os.clock()
 end
 
 function UILib:Destroy()
-    
+    -- remove core
     for _, drawing in pairs(self._tree['_drawings']) do
         drawing:Remove()
     end
 
+    -- remove dropdown
     self:_RemoveDropdown()
     self:_RemoveColorpicker()
 
+    -- remove tree
     for _, tab in pairs(self._tree['_tabs']) do
         if tab['_drawings'] then
             for _, drawing in pairs(tab['_drawings']) do
@@ -1665,3 +1697,4 @@ function UILib:Destroy()
 end
 
 return UILib
+-- x11 lib end
