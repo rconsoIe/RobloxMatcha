@@ -536,7 +536,7 @@ function UILib:Checkbox(tabName, sectionName, label, defaultValue, callback)
     local text = Drawing.new('Text')
     text.Color = self._color_text
     text.Outline = true
-    text.Text = label
+    text.Text = tostring(label or "")
 
     self:_AddToSection(tabName, sectionName, 'checkbox', defaultValue, callback, {
         outline,
@@ -606,7 +606,7 @@ function UILib:Choice(tabName, sectionName, label, defaultValue, callback, choic
     local text = Drawing.new('Text')
     text.Color = self._color_text
     text.Outline = true
-    text.Text = label
+    text.Text = tostring(label or "")
 
     self:_AddToSection(tabName, sectionName, 'choice', defaultValue, callback, {
         outline,
