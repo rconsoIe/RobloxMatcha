@@ -929,8 +929,8 @@ function UILib:Step()
             local step = 1 - (i - 1) / (self._gradient_detail - 1)
             segment.Size = Vector2.new(palleteSize * step, palleteSize)
             segment.Position = palletePosition
-            local h = 1 - clamp((self._active_colorpicker['_slider_y']) / palleteSize, 0, 1)
-            segment.Color = Color3.fromRGB(unpack(color3fromHSV(h, step, 1)))
+            local h = clamp((self._active_colorpicker['_slider_y']) / palleteSize, 0, 1)
+            segment.Color = Color3.fromHSV(h, step, 1)
             segment.Transparency = baseOpacity
             segment.Visible = childrenVisible
         end
@@ -952,7 +952,7 @@ function UILib:Step()
             local step = 1 - (i - 1) / self._gradient_detail
             segment.Size = Vector2.new(hueSliderWidth, palleteSize * step)
             segment.Position = hueSliderPos
-            segment.Color = Color3.fromRGB(unpack(color3fromHSV(step, 1, 1)))
+            segment.Color = Color3.fromHSV(step, 1, 1)
             segment.Transparency = baseOpacity
             segment.Visible = childrenVisible
         end
@@ -981,7 +981,7 @@ function UILib:Step()
         )
         local relSliderPos = clamp((self._active_colorpicker['_slider_y']) / palleteSize, 0, 1)
 
-        local h = 1 - relSliderPos
+        local h = relSliderPos
         local s = relPalletePos.x
         local v = 1 - relPalletePos.y
         local newColor = color3fromHSV(h, s, v)
