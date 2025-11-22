@@ -1,9 +1,81 @@
--- skidded
+--[[
+
+v1 x11 ui lib
+@nulare on discord
+
+UILib.new(<string> identity, <table> watermarkActivity) -> UILib
+
+UILib:Tab(<string> name) -> tabName
+UILib:Section(<tabName>, <string> name) -> sectionName
+UILib:CreateSettingsTab(<string> customName) -> tabName, sectionName, sectionName
+
+UILib:Checkbox(<tabName>, <sectionName>, <string> label, <boolean> defaultValue, <function> callback)
+UILib:Slider(<tabName>, <sectionName>, <string> label, <number> defaultValue, <function> callback, <number> min, <number> max, <number> step, <string> appendix)
+UILib:Choice(<tabName>, <sectionName>, <string> label, <table> defaultValue, <function | nil> callback, <table> choices, <boolean> multi)
+UILib:Colorpicker(<tabName>, <sectionName>, <string> label, <table[3]> defaultValue, <function | nil> callback)
+UILib:Keybind(<tabName>, <sectionName>, <string> label, <string(Keycode)> defaultValue, <function | nil> callback, <string: 'Hold', 'Toggle', 'Always'> mode)
+
+UILib:ToggleMenu(boolean)
+UILib:ToggleWatermark(boolean)
+UILib:Step()
+UILib:Destroy()
+
+Example usage:
+local function getPing(raw)
+    local pingAddress = game:FindFirstChild("Stats"):FindFirstChild("PerformanceStats"):FindFirstChild("Ping").Address
+    local ping = memory_read("double", pingAddress + 0xC8)
+
+    if raw then
+        return ping
+    end
+
+    return ("Ping: %sms"):format(math.floor(ping))
+end
+
+local UILib = require('workspace/x11-colorpicker.lua') -- import however you prefer!
+local myGui = UILib.new('chatgpthaxx', Vector2.new(320, 380), {getPing})
+
+local visualsTab = myGui:Tab('Visuals')
+local espSection = myGui:Section(visualsTab, 'General')
+myGui:Checkbox(visualsTab, espSection, 'Master', false, function(state)
+    printl('ESP:', state)
+end)
+myGui:Slider(visualsTab, espSection, 'Distance', 2500, function(value)
+    printl('ESP distance:', value)
+end, 100, 2500, 100, ' studs')
+
+local playerEspSection = myGui:Section(visualsTab, 'Players')
+myGui:Checkbox(visualsTab, playerEspSection, 'BBox', false, function(state)
+    printl('BBox:', state)
+end)
+myGui:Checkbox(visualsTab, playerEspSection, 'Name', false, function(state)
+    printl('Name:', state)
+end)
+myGui:Checkbox(visualsTab, playerEspSection, 'Distance', false, function(state)
+    printl('Distance:', state)
+end)
+myGui:Choice(visualsTab, playerEspSection, 'Flags', {}, function(values)
+    printl('Flags:', table.concat(values, ', '))
+end, {'Health', 'Humanoid state'}, true)
+myGui:Colorpicker(visualsTab, playerEspSection, 'Box color', {255, 0, 0}, nil)
+myGui:Keybind(visualsTab, playerEspSection, 'Toggle', 'm3', nil, 'Toggle')
+myGui:CreateSettingsTab()
+local running = true
+myGui:Checkbox(visualsTab, playerEspSection, 'Unload', false, function(state)
+    running = false
+end)
+while running do
+    myGui:Step()
+    wait(0.0015)
+end
+myGui:Destroy()
+
+]]
 
 UILib = {}
 UILib.__index = UILib
 
-ESP_FONTSIZE = 7 
+ESP_FONTSIZE = 7 -- works great with ProggyClean
 
 BLACK = Color3.new(0, 0, 0)
 
