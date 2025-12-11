@@ -26,7 +26,7 @@ local tab = gui:Tab('Visuals')
 local sec = gui:Section(tab, 'ESP Options')
 local settingsTab, settingsSec = gui:CreateSettingsTab("ESP Settings")
 
-local espTypes = {"None", "Eldertree", "Metal", "Star", "DeathAdder", "Beekeeper"}
+local espTypes = {"None", "Eldertree", "Metal", "Star", "DeathAdder", "Beekeeper", "Sheep-Herder"}
 local current = "None"
 local running = true
 local tracked = {}
@@ -56,7 +56,7 @@ end
 
 local function scan(name)
     local valid = {}
-    for _, m in pairs(workspace:GetChildren()) do
+    for _, m in pairs(workspace:GetDescendants()) do
         local p, lbl
         if name == "Metal" and m:FindFirstChild("hidden-metal-prompt") then
             p = m:FindFirstChild("Part")
@@ -73,6 +73,9 @@ local function scan(name)
         elseif name == "Beekeeper" and m.Name == "Bee" then
             p = m:FindFirstChild("Root")
             lbl = "Bee"
+        elseif name == "Sheep-Herder" and game.Workspace.SheepModel and m.Parent == game.Workspace.SheepModel then
+            p = m:FindFirstChild("RootPart")
+            lbl = "Sheep"
         end
         if p then
             local addr = tostring(p.Address)
