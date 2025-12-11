@@ -26,7 +26,7 @@ local tab = gui:Tab('Visuals')
 local sec = gui:Section(tab, 'ESP Options')
 local settingsTab, settingsSec = gui:CreateSettingsTab("ESP Settings")
 
-local espTypes = {"None", "Eldertree", "Metal", "Star", "DeathAdder", "Beekeeper", "Sheep-Herder"}
+local espTypes = {"None", "Eldertree", "Metal", "Star", "DeathAdder", "Beekeeper"}
 local current = "None"
 local running = true
 local tracked = {}
@@ -56,12 +56,7 @@ end
 
 local function scan(name)
     local valid = {}
-    local models = workspace:GetChildren()
-    if name == "Sheep-Herder" and workspace:FindFirstChild("SheepModel") then
-        models = workspace.SheepModel:GetChildren()
-    end
-
-    for _, m in pairs(models) do
+    for _, m in pairs(workspace:GetChildren()) do
         local p, lbl
         if name == "Metal" and m:FindFirstChild("hidden-metal-prompt") then
             p = m:FindFirstChild("Part")
@@ -78,11 +73,7 @@ local function scan(name)
         elseif name == "Beekeeper" and m.Name == "Bee" then
             p = m:FindFirstChild("Root")
             lbl = "Bee"
-        elseif name == "Sheep-Herder" then
-            p = m:FindFirstChild("RootPart")
-            lbl = "Sheep"
         end
-
         if p then
             local addr = tostring(p.Address)
             valid[addr] = true
@@ -98,11 +89,10 @@ local function scan(name)
                 b.Filled = boxConfig.Filled
                 b.Color = boxConfig.Color
                 b.Visible = false
-                tracked[addr] = {root = p, text = t, box = b}
+                tracked[addr] = {root=p, text=t, box=b}
             end
         end
     end
-
     for addr, v in pairs(tracked) do
         if not valid[addr] then
             if v.text then v.text:Remove() end
