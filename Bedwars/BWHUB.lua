@@ -26,7 +26,7 @@ local tab = gui:Tab('Visuals')
 local sec = gui:Section(tab, 'ESP Options')
 local settingsTab, settingsSec = gui:CreateSettingsTab("ESP Settings")
 
-local espTypes = {"None", "Eldertree", "Metal", "Star", "DeathAdder"}
+local espTypes = {"None", "Eldertree", "Metal", "Star", "DeathAdder", "Beekeeper"}
 local current = "None"
 local running = true
 local tracked = {}
@@ -70,6 +70,9 @@ local function scan(name)
         elseif name == "Star" and m:FindFirstChild("stars_ProximityPrompt") then
             p = m:FindFirstChild("RootPart")
             lbl = p and (p.Parent and p.Parent.Name or "Star")
+        elseif name == "Beekeeper" and m.Name == "Bee" then
+            p = m:FindFirstChild("Root")
+            lbl = "Bee"
         end
         if p then
             local addr = tostring(p.Address)
