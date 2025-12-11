@@ -56,7 +56,12 @@ end
 
 local function scan(name)
     local valid = {}
-    for _, m in pairs(workspace:GetDescendants()) do
+    local models = workspace:GetChildren()
+    if name == "Sheep-Herder" and workspace:FindFirstChild("SheepModel") then
+        models = workspace.SheepModel:GetChildren()
+    end
+
+    for _, m in pairs(models) do
         local p, lbl
         if name == "Metal" and m:FindFirstChild("hidden-metal-prompt") then
             p = m:FindFirstChild("Part")
@@ -73,10 +78,11 @@ local function scan(name)
         elseif name == "Beekeeper" and m.Name == "Bee" then
             p = m:FindFirstChild("Root")
             lbl = "Bee"
-        elseif name == "Sheep-Herder" and game.Workspace.SheepModel and m.Parent == game.Workspace.SheepModel then
+        elseif name == "Sheep-Herder" then
             p = m:FindFirstChild("RootPart")
             lbl = "Sheep"
         end
+
         if p then
             local addr = tostring(p.Address)
             valid[addr] = true
@@ -92,10 +98,11 @@ local function scan(name)
                 b.Filled = boxConfig.Filled
                 b.Color = boxConfig.Color
                 b.Visible = false
-                tracked[addr] = {root=p, text=t, box=b}
+                tracked[addr] = {root = p, text = t, box = b}
             end
         end
     end
+
     for addr, v in pairs(tracked) do
         if not valid[addr] then
             if v.text then v.text:Remove() end
