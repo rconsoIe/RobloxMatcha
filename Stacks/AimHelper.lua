@@ -17,6 +17,11 @@ function _G.AimHelper:AimAt(part)
         return false
     end
 
+    if point.X == 0 and point.Y == 0 then
+        print("[AimHelper] Screen point is (0,0), skipping")
+        return false
+    end
+
     local success, err = pcall(function()
         mousemoveabs(point.X, point.Y)
     end)
