@@ -1,11 +1,11 @@
-local AimHelper = {}
-AimHelper.__index = AimHelper
+_G.AimHelper = {}
+_G.AimHelper.__index = _G.AimHelper
 
-function AimHelper.new()
-    return setmetatable({}, AimHelper)
+function _G.AimHelper.new()
+    return setmetatable({}, _G.AimHelper)
 end
 
-function AimHelper:AimAt(part)
+function _G.AimHelper:AimAt(part)
     if not part or not part.Position then
         print("[AimHelper] Invalid part")
         return false
@@ -33,4 +33,4 @@ function AimHelper:AimAt(part)
     return false
 end
 
-return AimHelper
+return _G.AimHelper
