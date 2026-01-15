@@ -17,20 +17,17 @@ function _G.AimHelper:AimAt(part)
         return false
     end
 
-    local x, y = math.floor(point.X), math.floor(point.Y)
-    if x and y then
-        local success, err = pcall(function() mousemoveabs(x, y) end)
-        if success then
-            print(string.format("[AimHelper] Aimed at %s (%.1f, %.1f)", part.Name, x, y))
-            return true
-        else
-            print("[AimHelper] mousemoveabs failed:", err)
-            return false
-        end
-    end
+    local success, err = pcall(function()
+        mousemoveabs(point.X, point.Y)
+    end)
 
-    print("[AimHelper] Unknown error")
-    return false
+    if success then
+        print(string.format("[AimHelper] Aimed at %s (%.1f, %.1f)", part.Name, point.X, point.Y))
+        return true
+    else
+        print("[AimHelper] mousemoveabs failed:", err)
+        return false
+    end
 end
 
 return _G.AimHelper
